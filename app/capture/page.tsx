@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import {
   Box,
   Button,
-  Container,
   Stack,
   Typography,
 } from "@mui/material";
@@ -52,30 +51,59 @@ export default function CapturePage() {
   };
 
   return (
-    <Container sx={{ mt: 4, textAlign: "center" }}>
-      <Typography variant="h4" color="primary" mb={2}>
+    <Box
+      sx={{
+        bgcolor: "linear-gradient(to right, #e0f7fa, #e1bee7)",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        py: 4,
+      }}
+    >
+      <Typography variant="h4" color="primary" mb={3} fontWeight={600}>
         📸 Capture Photos
       </Typography>
 
-      <Box display="flex" justifyContent="center" mb={2}>
+      <Box
+        sx={{
+          bgcolor: "#fff",
+          p: 2,
+          borderRadius: 4,
+          boxShadow: 3,
+          mb: 3,
+        }}
+      >
         <Webcam
-          audio={false}
           ref={webcamRef}
+          audio={false}
           screenshotFormat="image/jpeg"
           style={{
-            width: "90%",
-            maxWidth: "400px",
-            borderRadius: "8px",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+            width: "100%",
+            maxWidth: "800px",
+            height: "auto",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
           }}
         />
       </Box>
 
       <Stack direction="row" spacing={2} justifyContent="center">
-        <Button variant="contained" onClick={capturePhotos}>
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          onClick={capturePhotos}
+        >
           📷 Capture & Upload
         </Button>
-        <Button variant="outlined" onClick={() => router.push("/")}>
+        <Button
+          variant="outlined"
+          color="secondary"
+          size="large"
+          onClick={() => router.push("/")}
+        >
           🏠 Back to PDFs
         </Button>
       </Stack>
@@ -84,11 +112,18 @@ export default function CapturePage() {
         <Typography
           variant="h1"
           color="error"
-          sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: 10,
+            fontSize: { xs: "4rem", md: "8rem" },
+          }}
         >
           {countdown}
         </Typography>
       )}
-    </Container>
+    </Box>
   );
 }

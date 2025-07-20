@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import {
   Box,
   Button,
   Card,
+  CardActions,
   CardActionArea,
   CardContent,
   CardMedia,
@@ -31,6 +33,16 @@ export default function Page() {
   useEffect(() => {
     fetchPdfs();
   }, []);
+
+  const deletePdf = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this PDF?")) return;
+    try {
+      await axios.delete(`http://localhost:8080/pdf/${id}`);
+      setPdfs((prev) => prev.filter((pdf) => pdf.id !== id));
+    } catch (err) {
+      alert("Failed to delete PDF");
+    }
+  };
 
   const HoverCard = styled(Card)(({ theme }) => ({
     transition: "transform 0.3s ease, box-shadow 0.3s ease",
@@ -72,25 +84,38 @@ export default function Page() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: i * 0.1 }}
             >
-              <HoverCard>
-                <CardActionArea href={`http://localhost:8080${pdf.download}`} target="_blank">
-                  <HoverImage
-                    component="img"
-                    height="160"
-                    image={`http://localhost:8080${pdf.preview}`}
-                  />
-                  <CardContent>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      align="center"
-                      sx={{ fontWeight: 500 }}
-                    >
-                      View PDF
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
-              </HoverCard>
+<HoverCard>
+  <CardActionArea href={`http://localhost:8080${pdf.download}`} target="_blank">
+    <HoverImage
+      component="img"
+      height="160"
+      image={`http://localhost:8080${pdf.preview}`}
+    />
+  </CardActionArea>
+
+  <CardContent>
+  <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+    <Button
+      size="small"
+      variant="outlined"
+      startIcon={<VisibilityIcon />}
+      onClick={() => window.open(`http://localhost:8080${pdf.download}`, "_blank")}
+    >
+      View
+    </Button>
+
+    <Button
+      size="small"
+      color="error"
+      onClick={() => deletePdf(pdf.id)}
+      variant="outlined"
+    >
+      🗑 Delete
+    </Button>
+  </Box>
+</CardContent>
+</HoverCard>
+
             </Grid>
           ))}
         </Grid>

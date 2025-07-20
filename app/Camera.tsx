@@ -11,7 +11,13 @@ export default function Camera() {
       ref={webcamRef}
       audio={false}
       screenshotFormat="image/jpeg"
-      className="webcam"
+      style={{
+        width: "100%",            // take full width of container
+        maxWidth: "900px",        // but cap it at 600px
+        height: "auto",           // auto height to preserve aspect
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+      }}
     />
   );
 }

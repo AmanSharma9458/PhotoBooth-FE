@@ -1,95 +1,100 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import {
+  Box,
+  Button,
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  Container,
+  Grid,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import { styled } from "@mui/system";
+import { motion } from "framer-motion";
+
+export default function Page() {
+  const [pdfs, setPdfs] = useState<{ id: number; preview: string; download: string }[]>([]);
+  const router = useRouter();
+  const theme = useTheme();
+
+  const fetchPdfs = async () => {
+    const res = await axios.get("http://localhost:8080/pdfs");
+    setPdfs(res.data);
+  };
+
+  useEffect(() => {
+    fetchPdfs();
+  }, []);
+
+  const HoverCard = styled(Card)(({ theme }) => ({
+    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+    "&:hover": {
+      transform: "translateY(-5px) scale(1.05)",
+      boxShadow: theme.shadows[6],
+    },
+  }));
+
+  const HoverImage = styled(CardMedia)({
+    transition: "transform 0.3s ease",
+    "&:hover": {
+      transform: "scale(1.1) translateY(-4px)",
+    },
+  });
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <Box sx={{ bgcolor: "#f0f4f8", minHeight: "100vh", py: 4 }}>
+      <Container>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+          <Typography variant="h4" color="primary" fontWeight={600}>
+            📄 Captured PDFs
+          </Typography>
+          <Button variant="contained" size="large" onClick={() => router.push("/capture")}>
+            📷 Capture Photos
+          </Button>
+        </Box>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <Grid container spacing={3}>
+          {pdfs.map((pdf, i) => (
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={3}
+              key={pdf.id}
+              component={motion.div}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: i * 0.1 }}
+            >
+              <HoverCard>
+                <CardActionArea href={`http://localhost:8080${pdf.download}`} target="_blank">
+                  <HoverImage
+                    component="img"
+                    height="160"
+                    image={`http://localhost:8080${pdf.preview}`}
+                  />
+                  <CardContent>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      align="center"
+                      sx={{ fontWeight: 500 }}
+                    >
+                      View PDF
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </HoverCard>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+    </Box>
   );
 }
